@@ -70,14 +70,24 @@ bool compareFiles(const char* file1, const char* file2) {
 
 int main() {
     int startL = 4;
-    int endL = 16;
+    int endL = 11;
 
-    string algoName[] = { "Lookup","Lookup_fgetc","Switch","NoEqual" };
+    string algoName[] = {
+        "NotEqual",
+        "Switch",
+        "Lookup",
+        "Switch_POPCNT",
+        "Lookup_POPCNT",
+        "Lookup_fgetc",
+    };
     
-    string prefixFileName = ".\\output\\Drosophila_A04_1M";
+    
     //string prefixFileName = ".\\output\\Paper_Example";
+    //string prefixFileName = ".\\output\\Drosophila_A04_1M";
+    string prefixFileName = ".\\output\\RandomDNA_100M";
     
-    for (int i = 1; i <= 3; i++) {
+    
+    for (int i = 1; i <= 5; i++) {
 
         for (int L = startL; L <= endL; L++) {
             string file1 = prefixFileName + "_L=" + to_string(L) + "_" + algoName[0] + ".txt";

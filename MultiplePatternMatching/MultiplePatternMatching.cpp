@@ -4,17 +4,21 @@
 
 #include <iostream>
 #include <string>
-#include <bitset>
 #include <chrono>
 #include <filesystem>
+#include <iomanip>
 #include <cstdlib>
+
+#ifndef _SHOW_MESSAGE
+#include <bitset>
+#endif
 
 using namespace std;
 
-/* Define the maximum size of alphabet */
+// Define the maximum size of alphabet
 #define MAX_ALPHABET_SIZE 255
 
-/* Define the abbreviated names */
+// Define the abbreviated names
 typedef unsigned char UC;
 typedef unsigned long long ULL;
 
@@ -26,7 +30,8 @@ enum DNA_Base {
 	T = 3,  // 對應數字 3
 	COUNT = 4
 };
-int base_lookup(char base) {
+
+static int base_lookup(char base) {
 	switch (base) {
 	case 'A': return DNA_Base::A;
 	case 'T': return DNA_Base::T;
@@ -36,7 +41,7 @@ int base_lookup(char base) {
 	}
 }
 
-int popcount(ULL i) {
+static int ComputeHD_64(ULL i) {
 	i = i - ((i >> 1) & 0x5555555555555555ULL);
 	i = (i & 0x3333333333333333ULL) + ((i >> 2) & 0x3333333333333333ULL);
 	return (int)((((i + (i >> 4)) & 0xF0F0F0F0F0F0F0FULL) * 0x101010101010101ULL) >> 56);
@@ -54,7 +59,7 @@ int popcount(ULL i) {
  * allocated memory. It ensures that any previously allocated memory for `charText` is freed before
  * allocating new memory. After the file content is read, a null terminator is added to make it a valid string.
  */
-int ReadFile(const char* filename, UC** fileText) {
+static int ReadFile(const char* filename, UC** fileText) {
 	FILE* fp = NULL;  // Declare a FILE pointer to open the file
 
 	// Open the file in binary read mode ("rb")
@@ -106,7 +111,7 @@ int ReadFile(const char* filename, UC** fileText) {
 	return fileSize;
 }
 
-void WriteFile(const char* filename, UC* data, int length) {
+static void WriteFile(const char* filename, UC* data, int length) {
 	FILE* fp = NULL;
 
 
@@ -130,9 +135,11 @@ void WriteFile(const char* filename, UC* data, int length) {
 }
 
 void LookupTable_fgetc(int parameterL, const char* inputFile, bool isOutput, const char* outputFile);
-void LookupTable(int parameterL, const char* inputFile, bool isOutput = false, const char* outputFile = "");
-void SwitchCharacter(int parameterL, const char* inputFile, bool isOutput = false, const char* outputFile = "");
 void NotEqual(int parameterL, const char* inputFile, bool isOutput = false, const char* outputFile = "");
+void SwitchCharacter(int parameterL, const char* inputFile, bool isOutput = false, const char* outputFile = "");
+void LookupTable(int parameterL, const char* inputFile, bool isOutput = false, const char* outputFile = "");
+void SwitchCharacter_POPCNT(int parameterL, const char* inputFile, bool isOutput = false, const char* outputFile = "");
+void LookupTable_POPCNT(int parameterL, const char* inputFile, bool isOutput = false, const char* outputFile = "");
 
 int main(int argc, char* argv[])
 {
@@ -141,6 +148,8 @@ int main(int argc, char* argv[])
 		"NotEqual",
 		"Switch",
 		"Lookup",
+		"Switch_POPCNT",
+		"Lookup_POPCNT",
 		"Lookup_fgetc",
 	};
 	
@@ -149,13 +158,15 @@ int main(int argc, char* argv[])
 		NotEqual,
 		SwitchCharacter,
 		LookupTable,
+		SwitchCharacter_POPCNT,
+		LookupTable_POPCNT,
 		LookupTable_fgetc,
 	};
 
 	int startL = 4;
 	int endL = 21;
 	int startAlgo = 0;
-	int endAlgo = 3;
+	int endAlgo = 5;
 	//bool isOutput = true;
 	bool isOutput = false;
 
@@ -176,26 +187,52 @@ int main(int argc, char* argv[])
 		startL = atoi(argv[2]);
 		endL = startL;
 		inputFile = argv[3];
+		cout << "algorithm: " << algoName[startAlgo] << " ";
+		//cout << right << setw(2) << "L";
+		//cout << right << setw(9) << "RF";
+		//cout << right << setw(9) << "CT";
+		//cout << right << setw(9) << "CB";
+		//cout << right << setw(9) << "CD";
+		//cout << right << setw(9) << "FM";
+		//cout << right << setw(9) << "TT";
+		//cout << right << setw(9) << "RT";
+		//cout << endl;
 	}
 
 
 	for (int i = startAlgo; i <= endAlgo; i++) {
-		cout << "algorithm: " << algoName[i];
 		if (argc < 3) {
+			cout << "algorithm: " << algoName[i] << endl;
+			cout << right << setw(2) << "L";
+			cout << right << setw(9) << "RF";
+			cout << right << setw(9) << "CT";
+			cout << right << setw(9) << "CB";
+			cout << right << setw(9) << "CD";
+			cout << right << setw(9) << "FM";
+			cout << right << setw(9) << "TT";
+			cout << right << setw(9) << "RT";
 			cout << endl;
 		}
 		for (int L = startL; L <= endL; L++)
 		{
 
 			if (isOutput) {
-				
+				cout << setw(2) << right << L;
+
 				string outputSuffixFile = outputPrefixFile + "_L=" + to_string(L) + "_" + algoName[i] + ".txt";
+
 				outputFile = outputSuffixFile.c_str();
 
+				auto start = chrono::high_resolution_clock::now();
+
 				func[i](L, inputFile, isOutput, outputFile);
+
+				auto end = chrono::high_resolution_clock::now();
+				auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+				cout << fixed << setprecision(3) << setw(9) << right << duration / 1000.0 << endl;
 			}
 			else {
-				cout << " L:" << setw(2) << right << L;
+				cout << setw(2) << right << L;
 
 				auto start = chrono::high_resolution_clock::now();
 
@@ -203,9 +240,9 @@ int main(int argc, char* argv[])
 
 				auto end = chrono::high_resolution_clock::now();
 				
+				auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
+				cout << fixed << setprecision(3) << setw(9) << right << duration / 1000.0 << endl;
 
-				auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count(); 
-				cout << " RT:" << duration / 1000.0 << endl;
 			}
 
 
@@ -291,7 +328,7 @@ void LookupTable(int L, const char* inputFile, bool isOutput, const char* output
 	bitText = (ULL*)calloc(numberInputString, sizeof(ULL));
 	if (bitText == NULL) {
 		// memory allocation fails
-		printf("Memory allocation failed\n");
+		printf("bitText: Memory allocation failed\n");
 		exit(1);
 		return;
 	}
@@ -338,13 +375,13 @@ void LookupTable(int L, const char* inputFile, bool isOutput, const char* output
 	distance = (UC*)malloc(numberInputString);
 	if (distance == NULL) {
 		// memory allocation fails
-		printf("Memory allocation failed\n");
+		printf("distance: Memory allocation failed\n");
 		exit(1);
 		return;
 	}
 	for (i = 0; i < numberInputString; i++) {
 		ULL xorResult = bitText[0] ^ bitText[i];
-		distance[i] = popcount((xorResult + clearWitnessBit) & keepWitnessBit);
+		distance[i] = ComputeHD_64((xorResult + clearWitnessBit) & keepWitnessBit);
 
 #ifndef _SHOW_MESSAGE
 		printf("%d,", distance[i]);
@@ -378,12 +415,12 @@ void LookupTable(int L, const char* inputFile, bool isOutput, const char* output
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << " RF:" << fixed << setprecision(3) << durReadFile / 1000.0;
-	cout << " CT:" << fixed << setprecision(3) << durCreatTable / 1000.0;
-	cout << " CB:" << fixed << setprecision(3) << durCharToBit / 1000.0;
-	cout << " CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
-	cout << " FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
-	cout << " TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCreatTable / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
 }
 
 void LookupTable_fgetc(int L, const char* inputFile, bool isOutput, const char* outputFile) {
@@ -457,7 +494,7 @@ void LookupTable_fgetc(int L, const char* inputFile, bool isOutput, const char* 
 	bitText = (ULL*)calloc(numberInputString, sizeof(ULL));
 	if (bitText == NULL) {
 		// memory allocation fails
-		printf("Memory allocation failed\n");
+		printf("bitText: Memory allocation failed\n");
 		exit(1);
 		return;
 	}
@@ -506,7 +543,7 @@ void LookupTable_fgetc(int L, const char* inputFile, bool isOutput, const char* 
 	distance = (UC*)malloc(numberInputString);
 	if (distance == NULL) {
 		// memory allocation fails
-		printf("Memory allocation failed\n");
+		printf("distance: Memory allocation failed\n");
 		exit(1);
 		return;
 	}
@@ -514,7 +551,7 @@ void LookupTable_fgetc(int L, const char* inputFile, bool isOutput, const char* 
 	// Calculate distance
 	for (i = 0; i < numberInputString; i++) {
 		ULL xorResult = bitText[0] ^ bitText[i];
-		distance[i] = popcount((xorResult + clearWitnessBit) & keepWitnessBit);
+		distance[i] = ComputeHD_64((xorResult + clearWitnessBit) & keepWitnessBit);
 #ifndef _SHOW_MESSAGE
 		printf("%d,", distance[i]);
 #endif // !_SHOW_MESSAGE
@@ -547,13 +584,185 @@ void LookupTable_fgetc(int L, const char* inputFile, bool isOutput, const char* 
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << " RF:" << fixed << setprecision(3) << 0 / 1000.0;
-	cout << " CT:" << fixed << setprecision(3) << durCreatTable / 1000.0;
-	cout << " CB:" << fixed << setprecision(3) << durCharToBit / 1000.0;
-	cout << " CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
-	cout << " FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
-	cout << " TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCreatTable / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
 }
+
+void LookupTable_POPCNT(int L, const char* inputFile, bool isOutput, const char* outputFile) {
+	auto startTotalTime = chrono::high_resolution_clock::now();
+
+	int i = 0;
+
+	auto startReadFile = chrono::high_resolution_clock::now();
+	UC* fileText = NULL;
+	int fileSize = ReadFile(inputFile, &fileText); // The length of text
+
+	if (fileSize < 0) {
+		printf("ERROR: Cannot read the text file (\"%s\").\n", inputFile);
+		exit(1);
+		return;
+	}
+
+	auto endReadFile = chrono::high_resolution_clock::now();
+
+	auto startCreatTable = chrono::high_resolution_clock::now();
+	UC alphabet[MAX_ALPHABET_SIZE];        // The alphabet of strings
+	// 先將字母表設成 0xff 表示未使用到
+	memset(alphabet, 0xff, MAX_ALPHABET_SIZE);
+
+	UC inputChar = 0;                      // A temporary character for reading text string
+	// 標記用到的字母
+	for (i = 0; i < fileSize; i++) {
+		inputChar = fileText[i];
+		alphabet[inputChar] = 0;
+	}
+	UC sizeAlphabet = 0;                   // The size of alphabet 
+	// 計算inputFile用到多少個字母表，並且根據ASCII順序編碼 0,1,2...
+	for (i = 0; i != MAX_ALPHABET_SIZE; i++)
+		if (!alphabet[i])
+			alphabet[i] = sizeAlphabet++;  // Assign an unique number for this symbol
+
+	UC numberBitForSymbol = 1;             // The number of bits used to record a symbol
+	// 計算一個字母需要多少個bit
+	for (i = 2; i < sizeAlphabet; i <<= 1)
+		numberBitForSymbol++;              // Calculate the number of bits used to record a symbol 
+	numberBitForSymbol++;                  // An extra leading witness bit is needed 
+
+	auto endCreatTable = chrono::high_resolution_clock::now();
+
+	auto startCharToBit = chrono::high_resolution_clock::now();
+	UC ENV = sizeof(ULL) * 8;              // The size of a computer word
+	// If the parameter l is too large that one computer word cannot deal with it, stop.
+	if (L * numberBitForSymbol > ENV)
+	{
+		printf("ERROR: The parameter l is too large! (A unit (unsigned long long) cannot handle it.)\n");
+		exit(1);
+		return;
+	}
+	if (fileSize < L) {
+		printf("ERROR: The parameter l is too small!\n");
+		exit(1);
+		return;
+	}
+
+
+	int numberInputString = fileSize - L + 1;             // The number of input strings 
+
+
+#ifndef _SHOW_MESSAGE
+	printf("text length = %d \n", fileSize);
+	printf("the number of the bits = %d\n", numberBitForSymbol);
+	printf("the number of input strings = %d\n", numberInputString);
+	cout << "filterUselessBit = " << bitset<15>(filterUselessBit) << endl;
+	cout << "clearWitnessBit  = " << bitset<15>(clearWitnessBit) << endl;
+	cout << "keepWitnessBit   = " << bitset<15>(keepWitnessBit) << endl;
+#endif // !_SHOW_MESSAGE
+
+
+	// Request memory for bit string with respect to text string
+	ULL* bitText = NULL;                   // The bit string with respect to text string
+	bitText = (ULL*)calloc(numberInputString, sizeof(ULL));
+	if (bitText == NULL) {
+		// memory allocation fails
+		printf("bitText: Memory allocation failed\n");
+		exit(1);
+		return;
+	}
+
+
+	// Read text string again and transfer each character into its corresponding number
+	for (i = 0; i < L; i++) {
+		bitText[0] = (bitText[0] << numberBitForSymbol) | alphabet[fileText[i]];
+	}
+	for (int i = 1; i < numberInputString; i++) {
+		bitText[i] = (bitText[i - 1] << numberBitForSymbol) | alphabet[fileText[L + i - 1]];
+	}
+
+	auto endCharToBit = chrono::high_resolution_clock::now();
+
+#ifndef _SHOW_MESSAGE
+	for (i = 0; i < numberInputString; i++) {
+		cout << "i=" << i << " bitText = " << bitset<15>(bitText[i]) << endl;
+	}
+#endif // !_SHOW_MESSAGE
+
+	auto startCalDistance = chrono::high_resolution_clock::now();
+
+	// If characters can exactly fill up in an ULL, no bit will be filted;
+	// Otherwise, compute the mask for filtering the unused bits in the high positions.
+	ULL filterUselessBit = 0x0ULL;         // The mask for filtering unused bits in a ULL 
+	const ULL bitforSymbol = L * numberBitForSymbol;
+	if (L * numberBitForSymbol == ENV)
+		filterUselessBit = ~0x0ULL;
+	else
+		filterUselessBit = (0x1ULL << (L * numberBitForSymbol)) - 1;
+
+	// Compute the masks for filtering witness bits and keeping witness bits
+	ULL clearWitnessBit = 0x0ULL;          // The mask for filtering the witness bits
+	ULL keepWitnessBit = 0x0ULL;           // The mask for filtering the bits whic are not witness bits
+	keepWitnessBit = clearWitnessBit = 0x1ULL << (numberBitForSymbol - 1);
+	for (i = 1; i != L; i++)
+		keepWitnessBit = (keepWitnessBit << numberBitForSymbol) | clearWitnessBit;
+	clearWitnessBit = (~keepWitnessBit) & filterUselessBit;
+
+	// Calculate distance
+	// Request memory for recording the distances between input string and reference string 
+	UC* distance = NULL;                   // The Hamming distances 
+	distance = (UC*)malloc(numberInputString);
+	if (distance == NULL) {
+		// memory allocation fails
+		printf("distance: Memory allocation failed\n");
+		exit(1);
+		return;
+	}
+	for (i = 0; i < numberInputString; i++) {
+		ULL xorResult = bitText[0] ^ bitText[i];
+		distance[i] = popcount((xorResult + clearWitnessBit) & keepWitnessBit);
+
+#ifndef _SHOW_MESSAGE
+		printf("%d,", distance[i]);
+#endif // !_SHOW_MESSAGE
+	}
+#ifndef _SHOW_MESSAGE
+	printf("\n");
+#endif // !_SHOW_MESSAGE
+
+	auto endCalDistance = chrono::high_resolution_clock::now();
+
+	if (isOutput) {
+		WriteFile(outputFile, distance, numberInputString);
+	}
+
+	auto startFreeMemory = chrono::high_resolution_clock::now();
+	if (bitText != NULL) {
+		free(bitText);
+		bitText = NULL;
+	}
+	if (distance != NULL) {
+		free(distance);
+		distance = NULL;
+	}
+	auto endFreeMemory = chrono::high_resolution_clock::now();
+	auto endTotalTime = chrono::high_resolution_clock::now();
+	auto durReadFile = chrono::duration_cast<chrono::microseconds>(endReadFile - startReadFile).count();
+	auto durCreatTable = chrono::duration_cast<chrono::microseconds>(endCreatTable - startCreatTable).count();
+	auto durCharToBit = chrono::duration_cast<chrono::microseconds>(endCharToBit - startCharToBit).count();
+	auto durCalDistance = chrono::duration_cast<chrono::microseconds>(endCalDistance - startCalDistance).count();
+	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
+	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
+
+	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCreatTable / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
+}
+
 
 void SwitchCharacter(int L, const char* inputFile, bool isOutput, const char* outputFile) {
 	auto startTotalTime = chrono::high_resolution_clock::now();
@@ -602,7 +811,7 @@ void SwitchCharacter(int L, const char* inputFile, bool isOutput, const char* ou
 	bitText = (ULL*)calloc(numberInputString, sizeof(ULL));
 	if (bitText == NULL) {
 		// 記憶體分配失敗的處理邏輯
-		printf("Memory allocation failed\n");
+		printf("bitText: Memory allocation failed\n");
 		exit(1);
 		return;
 	}
@@ -646,10 +855,150 @@ void SwitchCharacter(int L, const char* inputFile, bool isOutput, const char* ou
 	distance = (UC*)malloc(numberInputString);
 	if (distance == NULL) {
 		// memory allocation fails
-		printf("Memory allocation failed\n");
+		printf("distance: Memory allocation failed\n");
 		exit(1);
 		return;
 }
+	for (i = 0; i < numberInputString; i++) {
+		ULL xorResult = bitText[0] ^ bitText[i];
+		distance[i] = ComputeHD_64((xorResult + clearWitnessBit) & keepWitnessBit);
+
+#ifndef _SHOW_MESSAGE
+		printf("%d,", distance[i]);
+#endif // !_SHOW_MESSAGE
+	}
+#ifndef _SHOW_MESSAGE
+	printf("\n");
+#endif // !_SHOW_MESSAGE
+
+	auto endCalDistance = chrono::high_resolution_clock::now();
+
+	if (isOutput) {
+		WriteFile(outputFile, distance, numberInputString);
+	}
+
+	auto startFreeMemory = chrono::high_resolution_clock::now();
+	if (bitText != NULL) {
+		free(bitText);
+		bitText = NULL;
+	}
+	if (distance != NULL) {
+		free(distance);
+		distance = NULL;
+	}
+	auto endFreeMemory = chrono::high_resolution_clock::now();
+	auto endTotalTime = chrono::high_resolution_clock::now();
+
+	auto durReadFile = chrono::duration_cast<chrono::microseconds>(endReadFile - startReadFile).count();
+	//auto durCreatTable = chrono::duration_cast<chrono::microseconds>(endCreatTable - startCreatTable).count();
+	auto durCharToBit = chrono::duration_cast<chrono::microseconds>(endCharToBit - startCharToBit).count();
+	auto durCalDistance = chrono::duration_cast<chrono::microseconds>(endCalDistance - startCalDistance).count();
+	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
+	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
+
+	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
+}
+
+void SwitchCharacter_POPCNT(int L, const char* inputFile, bool isOutput, const char* outputFile) {
+	auto startTotalTime = chrono::high_resolution_clock::now();
+	int i = 0;
+
+	auto startReadFile = chrono::high_resolution_clock::now();
+	UC* fileText = NULL;
+	int fileSize = ReadFile(inputFile, &fileText); // The length of text
+
+	if (fileSize < 0) {
+		printf("ERROR: Cannot read the text file (\"%s\").\n", inputFile);
+		exit(1);
+		return;
+	}
+	auto endReadFile = chrono::high_resolution_clock::now();
+	auto startCharToBit = chrono::high_resolution_clock::now();
+	UC ENV = sizeof(ULL) * 8;              // The size of a computer word
+	UC numberBitForSymbol = 3;             // The number of bits used to record a symbol. 這裡只考慮 ACGT
+	// If the parameter l is too large that one computer word cannot deal with it, stop.
+	if (L * numberBitForSymbol > ENV)
+	{
+		printf("ERROR: The parameter l is too large! (A unit (unsigned long long) cannot handle it.)\n");
+		exit(1);
+		return;
+	}
+	if (fileSize < L) {
+		printf("ERROR: The parameter l is too small!\n");
+		exit(1);
+		return;
+	}
+
+	// Compute the number of total input strings 
+	int numberInputString = fileSize - L + 1;             // The number of input strings 
+
+#ifndef _SHOW_MESSAGE
+	printf("text length = %d \n", fileSize);
+	printf("the number of the bits = %d\n", numberBitForSymbol);
+	printf("the number of input strings = %d\n", numberInputString);
+	cout << "filterUselessBit = " << bitset<15>(filterUselessBit) << endl;
+	cout << "clearWitnessBit  = " << bitset<15>(clearWitnessBit) << endl;
+	cout << "keepWitnessBit   = " << bitset<15>(keepWitnessBit) << endl;
+#endif // !_SHOW_MESSAGE
+
+	// Request memory for bit string with respect to text string 
+	ULL* bitText = NULL;                   // The bit string with respect to text string 
+	bitText = (ULL*)calloc(numberInputString, sizeof(ULL));
+	if (bitText == NULL) {
+		// 記憶體分配失敗的處理邏輯
+		printf("bitText: Memory allocation failed\n");
+		exit(1);
+		return;
+	}
+
+	// Read text string again and transfer each character into its corresponding number 
+	for (i = 0; i < L; i++) {
+		bitText[0] = (bitText[0] << numberBitForSymbol) | base_lookup(fileText[i]);
+	}
+	for (int i = 1; i < numberInputString; i++) {
+		bitText[i] = (bitText[i - 1] << numberBitForSymbol) | base_lookup(fileText[L + i - 1]);
+	}
+	auto endCharToBit = chrono::high_resolution_clock::now();
+
+#ifndef _SHOW_MESSAGE
+	for (i = 0; i < numberInputString; i++) {
+		cout << "i=" << i << " bitText = " << bitset<15>(bitText[i]) << endl;
+	}
+#endif // !_SHOW_MESSAGE
+	auto startCalDistance = chrono::high_resolution_clock::now();
+
+	// If characters can exactly fill up in an ULL, no bit will be filted;
+	// Otherwise, compute the mask for filtering the unused bits in the high positions.
+	ULL filterUselessBit = 0x0ULL;         // The mask for filtering unused bits in a ULL
+	const ULL bitforSymbol = L * numberBitForSymbol;
+	if (L * numberBitForSymbol == ENV)
+		filterUselessBit = ~0x0ULL;
+	else
+		filterUselessBit = (0x1ULL << (L * numberBitForSymbol)) - 1;
+
+	ULL clearWitnessBit = 0x0ULL;          // The mask for filtering the witness bits
+	ULL keepWitnessBit = 0x0ULL;           // The mask for filtering the bits whic are not witness bits
+	// Compute the masks for filtering witness bits and keeping witness bits
+	keepWitnessBit = clearWitnessBit = 0x1ULL << (numberBitForSymbol - 1);
+	for (i = 1; i != L; i++)
+		keepWitnessBit = (keepWitnessBit << numberBitForSymbol) | clearWitnessBit;
+	clearWitnessBit = (~keepWitnessBit) & filterUselessBit;
+
+	// Calculate distance
+	// Request memory for recording the distances between input string and reference string 
+	UC* distance = NULL;                   // The Hamming distances 
+	distance = (UC*)malloc(numberInputString);
+	if (distance == NULL) {
+		// memory allocation fails
+		printf("distance: Memory allocation failed\n");
+		exit(1);
+		return;
+	}
 	for (i = 0; i < numberInputString; i++) {
 		ULL xorResult = bitText[0] ^ bitText[i];
 		distance[i] = popcount((xorResult + clearWitnessBit) & keepWitnessBit);
@@ -687,12 +1036,12 @@ void SwitchCharacter(int L, const char* inputFile, bool isOutput, const char* ou
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << " RF:" << fixed << setprecision(3) << durReadFile / 1000.0;
-	cout << " CT:" << fixed << setprecision(3) << 0 / 1000.0;
-	cout << " CB:" << fixed << setprecision(3) << durCharToBit / 1000.0;
-	cout << " CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
-	cout << " FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
-	cout << " TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
 }
 
 void NotEqual(int L, const char* inputFile, bool isOutput, const char* outputFile) {
@@ -714,11 +1063,17 @@ void NotEqual(int L, const char* inputFile, bool isOutput, const char* outputFil
 	// Compute the number of total input strings 
 	int numberInputString = fileSize - L + 1;             // The number of input strings 
 
+	if (fileSize < L) {
+		printf("ERROR: The parameter l is too small!\n");
+		exit(1);
+		return;
+	}
+
 	UC* distance = NULL;                   // The Hamming distances 
 	distance = (UC*)malloc(numberInputString);
 	if (distance == NULL) {
 		// memory allocation fails
-		printf("Memory allocation failed\n");
+		printf("distance: Memory allocation failed\n");
 		exit(1);
 		return;
 	}
@@ -760,11 +1115,11 @@ void NotEqual(int L, const char* inputFile, bool isOutput, const char* outputFil
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << " RF:" << fixed << setprecision(3) << durReadFile / 1000.0;
-	cout << " CT:" << fixed << setprecision(3) << 0 / 1000.0;
-	cout << " CB:" << fixed << setprecision(3) << 0 / 1000.0;
-	cout << " CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
-	cout << " FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
-	cout << " TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
 
 }
