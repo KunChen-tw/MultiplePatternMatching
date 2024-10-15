@@ -138,7 +138,7 @@ int main(int argc, char* argv[])
 {
 
 	string algoName[] = {
-		"NoEqual",
+		"NotEqual",
 		"Switch",
 		"Lookup",
 		"Lookup_fgetc",
@@ -205,7 +205,7 @@ int main(int argc, char* argv[])
 				
 
 				auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count(); 
-				cout << ", RT:" << duration / 1000.0 << endl;
+				cout << " RT:" << duration / 1000.0 << endl;
 			}
 
 
@@ -378,12 +378,12 @@ void LookupTable(int L, const char* inputFile, bool isOutput, const char* output
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << ", RF:" << fixed << setprecision(3) << durReadFile / 1000.0;
-	cout << ", CT:" << fixed << setprecision(3) << durCreatTable / 1000.0;
-	cout << ", CB:" << fixed << setprecision(3) << durCharToBit / 1000.0;
-	cout << ", CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
-	cout << ", FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
-	cout << ", TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
+	cout << " RF:" << fixed << setprecision(3) << durReadFile / 1000.0;
+	cout << " CT:" << fixed << setprecision(3) << durCreatTable / 1000.0;
+	cout << " CB:" << fixed << setprecision(3) << durCharToBit / 1000.0;
+	cout << " CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
+	cout << " FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
+	cout << " TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
 }
 
 void LookupTable_fgetc(int L, const char* inputFile, bool isOutput, const char* outputFile) {
@@ -547,12 +547,12 @@ void LookupTable_fgetc(int L, const char* inputFile, bool isOutput, const char* 
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << ", RF:" << fixed << setprecision(3) << 0 / 1000.0;
-	cout << ", CT:" << fixed << setprecision(3) << durCreatTable / 1000.0;
-	cout << ", CB:" << fixed << setprecision(3) << durCharToBit / 1000.0;
-	cout << ", CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
-	cout << ", FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
-	cout << ", TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
+	cout << " RF:" << fixed << setprecision(3) << 0 / 1000.0;
+	cout << " CT:" << fixed << setprecision(3) << durCreatTable / 1000.0;
+	cout << " CB:" << fixed << setprecision(3) << durCharToBit / 1000.0;
+	cout << " CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
+	cout << " FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
+	cout << " TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
 }
 
 void SwitchCharacter(int L, const char* inputFile, bool isOutput, const char* outputFile) {
@@ -687,12 +687,12 @@ void SwitchCharacter(int L, const char* inputFile, bool isOutput, const char* ou
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << ", RF:" << fixed << setprecision(3) << durReadFile / 1000.0;
-	cout << ", CT:" << fixed << setprecision(3) << 0 / 1000.0;
-	cout << ", CB:" << fixed << setprecision(3) << durCharToBit / 1000.0;
-	cout << ", CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
-	cout << ", FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
-	cout << ", TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
+	cout << " RF:" << fixed << setprecision(3) << durReadFile / 1000.0;
+	cout << " CT:" << fixed << setprecision(3) << 0 / 1000.0;
+	cout << " CB:" << fixed << setprecision(3) << durCharToBit / 1000.0;
+	cout << " CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
+	cout << " FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
+	cout << " TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
 }
 
 void NotEqual(int L, const char* inputFile, bool isOutput, const char* outputFile) {
@@ -760,11 +760,11 @@ void NotEqual(int L, const char* inputFile, bool isOutput, const char* outputFil
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << ", RF:" << fixed << setprecision(3) << durReadFile / 1000.0;
-	cout << ", CT:" << fixed << setprecision(3) << 0 / 1000.0;
-	cout << ", CB:" << fixed << setprecision(3) << 0 / 1000.0;
-	cout << ", CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
-	cout << ", FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
-	cout << ", TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
+	cout << " RF:" << fixed << setprecision(3) << durReadFile / 1000.0;
+	cout << " CT:" << fixed << setprecision(3) << 0 / 1000.0;
+	cout << " CB:" << fixed << setprecision(3) << 0 / 1000.0;
+	cout << " CD:" << fixed << setprecision(3) << durCalDistance / 1000.0;
+	cout << " FM:" << fixed << setprecision(3) << durFreeMemory / 1000.0;
+	cout << " TT:" << fixed << setprecision(3) << durTotalTime / 1000.0;
 
 }
