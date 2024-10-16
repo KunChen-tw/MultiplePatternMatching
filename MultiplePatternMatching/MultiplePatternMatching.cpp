@@ -187,15 +187,15 @@ int main(int argc, char* argv[])
 		startL = atoi(argv[2]);
 		endL = startL;
 		inputFile = argv[3];
-		cout << "algorithm: " << algoName[startAlgo] << " ";
+		cout << "algorithm: " << setw(10) << left << algoName[startAlgo] << " ";
 		//cout << right << setw(2) << "L";
-		//cout << right << setw(9) << "RF";
-		//cout << right << setw(9) << "CT";
-		//cout << right << setw(9) << "CB";
-		//cout << right << setw(9) << "CD";
-		//cout << right << setw(9) << "FM";
-		//cout << right << setw(9) << "TT";
-		//cout << right << setw(9) << "RT";
+		//cout << right << setw(10) << "RF";
+		//cout << right << setw(10) << "CT";
+		//cout << right << setw(10) << "CB";
+		//cout << right << setw(10) << "CD";
+		//cout << right << setw(10) << "FM";
+		//cout << right << setw(10) << "TT";
+		//cout << right << setw(10) << "RT";
 		//cout << endl;
 	}
 
@@ -204,13 +204,13 @@ int main(int argc, char* argv[])
 		if (argc < 3) {
 			cout << "algorithm: " << algoName[i] << endl;
 			cout << right << setw(2) << "L";
-			cout << right << setw(9) << "RF";
-			cout << right << setw(9) << "CT";
-			cout << right << setw(9) << "CB";
-			cout << right << setw(9) << "CD";
-			cout << right << setw(9) << "FM";
-			cout << right << setw(9) << "TT";
-			cout << right << setw(9) << "RT";
+			cout << right << setw(10) << "RF";
+			cout << right << setw(10) << "CT";
+			cout << right << setw(10) << "CB";
+			cout << right << setw(10) << "CD";
+			cout << right << setw(10) << "FM";
+			cout << right << setw(10) << "TT";
+			cout << right << setw(10) << "RT";
 			cout << endl;
 		}
 		for (int L = startL; L <= endL; L++)
@@ -229,7 +229,7 @@ int main(int argc, char* argv[])
 
 				auto end = chrono::high_resolution_clock::now();
 				auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
-				cout << fixed << setprecision(3) << setw(9) << right << duration / 1000.0 << endl;
+				cout << fixed << setprecision(3) << setw(10) << right << duration / 1000.0 << endl;
 			}
 			else {
 				cout << setw(2) << right << L;
@@ -241,7 +241,7 @@ int main(int argc, char* argv[])
 				auto end = chrono::high_resolution_clock::now();
 				
 				auto duration = chrono::duration_cast<chrono::microseconds>(end - start).count();
-				cout << fixed << setprecision(3) << setw(9) << right << duration / 1000.0 << endl;
+				cout << fixed << setprecision(3) << setw(10) << right << duration / 1000.0 << endl;
 
 			}
 
@@ -415,12 +415,12 @@ void LookupTable(int L, const char* inputFile, bool isOutput, const char* output
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCreatTable / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCreatTable / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durTotalTime / 1000.0;
 }
 
 void LookupTable_fgetc(int L, const char* inputFile, bool isOutput, const char* outputFile) {
@@ -584,12 +584,12 @@ void LookupTable_fgetc(int L, const char* inputFile, bool isOutput, const char* 
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCreatTable / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCreatTable / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durTotalTime / 1000.0;
 }
 
 void LookupTable_POPCNT(int L, const char* inputFile, bool isOutput, const char* outputFile) {
@@ -755,12 +755,12 @@ void LookupTable_POPCNT(int L, const char* inputFile, bool isOutput, const char*
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCreatTable / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCreatTable / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durTotalTime / 1000.0;
 }
 
 
@@ -896,12 +896,12 @@ void SwitchCharacter(int L, const char* inputFile, bool isOutput, const char* ou
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durTotalTime / 1000.0;
 }
 
 void SwitchCharacter_POPCNT(int L, const char* inputFile, bool isOutput, const char* outputFile) {
@@ -1036,12 +1036,12 @@ void SwitchCharacter_POPCNT(int L, const char* inputFile, bool isOutput, const c
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCharToBit / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCharToBit / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durTotalTime / 1000.0;
 }
 
 void NotEqual(int L, const char* inputFile, bool isOutput, const char* outputFile) {
@@ -1115,11 +1115,11 @@ void NotEqual(int L, const char* inputFile, bool isOutput, const char* outputFil
 	auto durFreeMemory = chrono::duration_cast<chrono::microseconds>(endFreeMemory - startFreeMemory).count();
 	auto durTotalTime = chrono::duration_cast<chrono::microseconds>(endTotalTime - startTotalTime).count();
 
-	cout << fixed << setprecision(3) << setw(9) << right << durReadFile / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << 0 / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durCalDistance / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durFreeMemory / 1000.0;
-	cout << fixed << setprecision(3) << setw(9) << right << durTotalTime / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durReadFile / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << 0 / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durCalDistance / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durFreeMemory / 1000.0;
+	cout << fixed << setprecision(3) << setw(10) << right << durTotalTime / 1000.0;
 
 }
