@@ -13,8 +13,8 @@ int main() {
     mt19937 generator(rd()); // 使用梅森旋轉算法作為隨機數生成器
     uniform_int_distribution<int> distribution(0, 3); // 均勻分布，範圍 0 到 3
 
-    const long long length = 500 * 1024 * 1024; // DNA序列長度設置為100MB (104857600字元)
-    const char* filename = "RandomDNA_500M.txt";
+    const long long length = 1024 * 1024 * 1024; // DNA序列長度設置為100MB (104857600字元)
+    const char* filename = "RandomDNA_1G.txt";
     // 使用 fopen 寫入檔案
     FILE* output_file = fopen(filename, "w"); // 開啟檔案進行寫入
     if (output_file != nullptr) {
